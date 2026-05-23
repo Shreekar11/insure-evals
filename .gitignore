@@ -28,6 +28,8 @@ huggingface/
 # SQLite — ignore ad-hoc DBs, but keep the committed results DB
 *.db
 !results/traces.db
+# traces.json is the HF-Space-friendly export (text, safe to commit)
+# !results/traces.json  ← not needed; .json not globally ignored
 
 # Misc
 .DS_Store

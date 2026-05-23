@@ -4,14 +4,15 @@ Traces tab — drill into eval probes. Harmful jailbreak responses are REDACTED.
 import json
 import gradio as gr
 
-from src.eval.store import fetch_all
+from src.eval.store import fetch_all, fetch_from_json
 from config import TRACES_DB
 
 
 def _load_traces() -> list[dict]:
-    if not TRACES_DB.exists():
-        return []
-    return fetch_all()
+    # Prefer SQLite (local dev); fall back to JSON export (HF Spaces)
+    if TRACES_DB.exists():
+        return fetch_all()
+    return fetch_from_json()
 
 
 def _sanitize_response(row: dict) -> str:

@@ -78,6 +78,15 @@ def insert(result: ProbeResult, db_path: Path = TRACES_DB) -> int:
         return cur.lastrowid
 
 
+def fetch_from_json(json_path: Path | None = None) -> list[dict]:
+    """Read traces from JSON export (used on HF Spaces where SQLite is unavailable)."""
+    import json as _json
+    p = json_path or TRACES_DB.parent / "traces.json"
+    if not p.exists():
+        return []
+    return _json.loads(p.read_text())
+
+
 def fetch_all(db_path: Path = TRACES_DB) -> list[dict]:
     with _conn(db_path) as con:
         rows = con.execute("SELECT * FROM traces ORDER BY id").fetchall()
