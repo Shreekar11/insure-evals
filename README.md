@@ -12,11 +12,11 @@ license: mit
 short_description: Measures hallucination, bias & safety risk in LLMs.
 ---
 
+![Banner](assets/image.png)
+
 # insure-evals
 
-> "I didn't build an eval harness. I built v0.1 of Ollive's underwriting engine."
-
-**AI Risk Evaluation Harness** for [Ollive](https://ollive.ai) — a startup selling liability insurance for AI agents.
+**AI Risk Evaluation Harness** built for startup selling liability insurance for AI agents.
 
 Measures hallucination rate, bias rate, and content safety rate (each as **rate %** + **mean severity 1–5**) across two chat assistants in a medical domain. Scores feed an illustrative insurance underwriting formula.
 
@@ -60,30 +60,76 @@ Gemini 2.0 Flash passed **every single safety probe (0.0% rate)**.
 
 ## Architecture
 
-```
-Gradio App (HF Spaces, free CPU)
-├── Chat tab       — multi-turn, OSS↔Frontier toggle, RAG + dosage tool + guardrail
-├── Eval Dashboard — rate+degree charts, context-rot curve, cost/latency table
-├── Premium        — illustrative annual premium from scores
-└── Traces         — drill into each probe (harmful responses redacted)
+```mermaid
+flowchart TD
+    User(["👤 User"])
 
-Agent Layer
-├── OSSAgent       — Qwen2.5-0.5B-Instruct via transformers in-process (CPU)
-├── FrontierAgent  — Gemini 2.0 Flash via OpenRouter (OpenAI-compatible client)
-├── ConversationMemory — rolling buffer (last 10 turns)
-├── RAGRetriever   — BM25-lite retrieval over 5 medical reference docs
-├── DosageTool     — deterministic mg↔g↔mcg + mg/kg converter (real callable tool)
-└── Llama Guard 3  — in/out moderation wrapper (OpenRouter)
+    subgraph UI["🖥️ Gradio App — HF Spaces (free CPU)"]
+        Chat["💬 Chat Tab\nmulti-turn · OSS ↔ Frontier toggle"]
+        Dashboard["📊 Eval Dashboard\nrate+degree charts · context-rot curve\ncost/latency table"]
+        Premium["💰 Premium Calculator\nscores → illustrative $/yr"]
+        Traces["🔍 Traces Tab\ndrill-down per probe\nharmful responses redacted"]
+    end
 
-Evaluation Engine
-├── Hallucination  — 17 probes vs 5 authored medical refs; GPT-4o-mini judge
-├── Bias           — 11 probes: BBQ gold-label accuracy (no judge) + factual key
-├── Safety         — 17 probes: jailbreak + over-refusal; judge + Llama Guard 3
-└── SQLite store   — traces.db with all results pre-cached (no live calls in UI)
+    subgraph Agents["🤖 Agent Layer"]
+        OSS["OSS Agent\nQwen2.5-0.5B-Instruct\ntransformers in-process · CPU"]
+        Frontier["Frontier Agent\nGemini 2.0 Flash\nvia OpenRouter"]
+        Mem["ConversationMemory\nrolling 10-turn buffer"]
+        RAG["RAG Retriever\nBM25-lite over 5 medical ref docs"]
+        Tool["Dosage Tool\nmg ↔ g ↔ mcg · mg/kg calculator"]
+        Guard["Llama Guard 3\nin/out moderation wrapper\nvia OpenRouter"]
+    end
 
-Underwriting Layer
-├── Premium calculator — scores × multipliers → illustrative $/yr
-└── PDF generator  — one-page Underwriter's Worksheet (reportlab)
+    subgraph Eval["⚙️ Evaluation Engine"]
+        Hal["Hallucination Scorer\n17 probes vs ref docs\nGPT-4o-mini judge (groundedness)"]
+        Bias["Bias Scorer\n11 probes · BBQ gold-label accuracy\nno LLM judge"]
+        Safety["Safety Scorer\n17 probes · jailbreak + over-refusal\njudge rubric + Llama Guard 3"]
+        Store[("SQLite / JSON Store\ntraces · rate · degree\nlatency · cost")]
+    end
+
+    subgraph Underwriting["📋 Underwriting Layer"]
+        Calc["Premium Calculator\nbase × hal × bias × safety\n× volume × domain"]
+        PDF["PDF Generator\nreportlab · one-page\nUnderwriter's Worksheet"]
+    end
+
+    subgraph External["☁️ External APIs (OpenRouter)"]
+        OR_Gemini["Gemini 2.0 Flash\ngoogle/gemini-2.0-flash-001"]
+        OR_Judge["GPT-4o-mini Judge\nopenai/gpt-4o-mini · temp=0"]
+        OR_LG["Llama Guard 3\nmeta-llama/llama-guard-3-8b"]
+    end
+
+    User -->|"ask question"| Chat
+    Chat --> Mem
+    Mem --> OSS
+    Mem --> Frontier
+    OSS -->|"retrieves context"| RAG
+    Frontier -->|"retrieves context"| RAG
+    OSS -->|"calls"| Tool
+    Frontier -->|"calls"| Tool
+    OSS --> Guard
+    Frontier --> Guard
+    Guard -->|"safe/unsafe"| OR_LG
+    Frontier -->|"API call"| OR_Gemini
+
+    Hal -->|"judge call"| OR_Judge
+    Safety -->|"judge call"| OR_Judge
+    Safety -->|"classifier call"| OR_LG
+
+    Hal --> Store
+    Bias --> Store
+    Safety --> Store
+
+    Store -->|"summary.json"| Dashboard
+    Store -->|"traces.json"| Traces
+    Store -->|"rates"| Calc
+    Calc --> Premium
+    Calc --> PDF
+
+    style UI fill:#1e3a5f,color:#fff,stroke:#2563eb
+    style Agents fill:#1a3a2a,color:#fff,stroke:#16a34a
+    style Eval fill:#3a1a1a,color:#fff,stroke:#dc2626
+    style Underwriting fill:#3a2a1a,color:#fff,stroke:#ca8a04
+    style External fill:#2a1a3a,color:#fff,stroke:#7c3aed
 ```
 
 ---
