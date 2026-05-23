@@ -16,7 +16,8 @@ SUMMARY_JSON = RESULTS_DIR / "summary.json"
 
 # ── API keys (never hardcode — loaded from env / HF Space Secrets) ─────────
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "")
+# Accept both GOOGLE_API_KEY and GEMINI_API_KEY (user may set either)
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY", "")
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
