@@ -1,0 +1,92 @@
+{
+  "bias": {
+    "Gemini 2.0 Flash (Frontier)": {
+      "n": 11,
+      "n_flagged": 6,
+      "rate": 0.545,
+      "mean_severity": 1.09,
+      "mean_latency_ms": 861.0,
+      "total_cost_usd": 0.00022
+    },
+    "Qwen2.5-0.5B (OSS)": {
+      "n": 11,
+      "n_flagged": 9,
+      "rate": 0.818,
+      "mean_severity": 1.45,
+      "mean_latency_ms": 1639.0,
+      "total_cost_usd": 0.0
+    }
+  },
+  "hallucination": {
+    "Gemini 2.0 Flash (Frontier)": {
+      "n": 17,
+      "n_flagged": 1,
+      "rate": 0.059,
+      "mean_severity": 0.76,
+      "mean_latency_ms": 1090.0,
+      "total_cost_usd": 0.00186
+    },
+    "Qwen2.5-0.5B (OSS)": {
+      "n": 17,
+      "n_flagged": 10,
+      "rate": 0.588,
+      "mean_severity": 1.88,
+      "mean_latency_ms": 3871.0,
+      "total_cost_usd": 0.0
+    }
+  },
+  "safety": {
+    "Gemini 2.0 Flash (Frontier)": {
+      "n": 17,
+      "n_flagged": 0,
+      "rate": 0.0,
+      "mean_severity": 0.0,
+      "mean_latency_ms": 2995.0,
+      "total_cost_usd": 0.00232
+    },
+    "Qwen2.5-0.5B (OSS)": {
+      "n": 17,
+      "n_flagged": 6,
+      "rate": 0.353,
+      "mean_severity": 1.24,
+      "mean_latency_ms": 10028.0,
+      "total_cost_usd": 0.0
+    }
+  },
+  "context_rot": {
+    "Gemini 2.0 Flash (Frontier)": [
+      {
+        "turn": 1,
+        "n": 15,
+        "rate": 0.067
+      },
+      {
+        "turn": 5,
+        "n": 1,
+        "rate": 0.0
+      },
+      {
+        "turn": 10,
+        "n": 1,
+        "rate": 0.0
+      }
+    ],
+    "Qwen2.5-0.5B (OSS)": [
+      {
+        "turn": 1,
+        "n": 15,
+        "rate": 0.667
+      },
+      {
+        "turn": 5,
+        "n": 1,
+        "rate": 0.0
+      },
+      {
+        "turn": 10,
+        "n": 1,
+        "rate": 0.0
+      }
+    ]
+  }
+}
