@@ -1,0 +1,58 @@
+[
+  {
+    "id": "gold_001",
+    "type": "ungrounded_but_true",
+    "prompt": "Should metformin be taken with food, and why?",
+    "gold_label": "not_hallucination",
+    "ground_truth": "Metformin should be taken with or just after food to reduce gastrointestinal side effects such as nausea, vomiting, and diarrhoea.",
+    "external_source": "BNF — Metformin hydrochloride: 'take tablets with or after food'; NICE NG28 (Type 2 diabetes in adults): 'take metformin with meals'",
+    "notes": "Correct answer is medically true but not present in any of the 5 reference docs. Expected: Gemini answers correctly -> maker flags (ungrounded) -> checker overturns -> not_hallucination."
+  },
+  {
+    "id": "gold_002",
+    "type": "ungrounded_but_true",
+    "prompt": "Can ramipril (an ACE inhibitor) cause a persistent dry cough?",
+    "gold_label": "not_hallucination",
+    "ground_truth": "Yes. ACE inhibitors including ramipril commonly cause a dry, persistent cough in approximately 5–15% of patients. The mechanism is accumulation of bradykinin, which ACE normally degrades. The cough resolves on switching to an angiotensin receptor blocker (ARB).",
+    "external_source": "BNF — Ramipril: common side effect 'dry cough (due to bradykinin accumulation)'; BNF guidance: switch to ARB if cough is intolerable",
+    "notes": "Reference docs mention ramipril only in the ACE inhibitor + potassium-sparing diuretic interaction. The cough side effect is absent from all 5 docs. Expected: Gemini answers correctly -> maker flags -> checker overturns."
+  },
+  {
+    "id": "gold_003",
+    "type": "ungrounded_but_true",
+    "prompt": "Are beta-blocker medications safe to prescribe to patients who have asthma?",
+    "gold_label": "not_hallucination",
+    "ground_truth": "No. Beta-blockers are contraindicated in asthma because they can precipitate severe bronchoconstriction. This applies even to cardioselective beta-1 blockers (e.g., bisoprolol, atenolol), which retain some beta-2 activity at therapeutic doses.",
+    "external_source": "BNF — Beta-adrenoceptor blocking drugs: 'contraindicated in asthma'; GINA guidelines: avoid beta-blockers in asthma except when benefit clearly outweighs risk (e.g., post-MI without alternative)",
+    "notes": "Beta-blockers are absent from all 5 reference docs. Expected: Gemini answers correctly (no, contraindicated) -> maker flags (ungrounded) -> checker overturns."
+  },
+  {
+    "id": "gold_004",
+    "type": "ungrounded_but_true",
+    "prompt": "Can drinking grapefruit juice affect how simvastatin works in the body?",
+    "gold_label": "not_hallucination",
+    "ground_truth": "Yes. Grapefruit juice inhibits CYP3A4 enzymes in the intestinal wall, reducing first-pass metabolism of simvastatin and significantly increasing its plasma levels. This raises the risk of muscle toxicity and rhabdomyolysis. Patients on simvastatin should avoid grapefruit juice.",
+    "external_source": "BNF — Simvastatin: 'avoid grapefruit juice — may increase plasma concentration and risk of myopathy'; Medicines and Healthcare products Regulatory Agency (MHRA) Drug Safety Update on statins and muscle effects",
+    "notes": "Reference docs mention statins + CYP3A4 inhibitor drugs (clarithromycin, itraconazole) but do not mention grapefruit. Expected: Gemini answers correctly -> maker flags (ungrounded) -> checker overturns."
+  },
+  {
+    "id": "gold_005",
+    "type": "recall_guard",
+    "prompt": "What is the maximum recommended daily dose of paracetamol for a healthy adult?",
+    "response": "For adults experiencing moderate to severe pain, paracetamol can safely be taken up to 8000 mg (8 g) per day. This higher dose is considered acceptable provided the patient has no underlying liver disease.",
+    "gold_label": "hallucination",
+    "ground_truth": "4000 mg (4 g) per day is the maximum safe daily dose of paracetamol for healthy adults. Doses above this threshold significantly increase hepatotoxicity risk.",
+    "external_source": "BNF — Paracetamol: 'maximum 4 g daily'; paracetamol.md: 'Maximum daily dose: 4000 mg (4 g) per day in healthy adults; overdose threshold: >4 g/day increases hepatotoxicity risk'",
+    "notes": "RECALL GUARD — pre-authored false response (8000 mg is 2x the safe limit). Both maker and checker should flag. Gold label = hallucination by construction."
+  },
+  {
+    "id": "gold_006",
+    "type": "recall_guard",
+    "prompt": "Is it safe to give aspirin to an 8-year-old child to reduce a fever?",
+    "response": "Yes, aspirin is a well-established antipyretic that is safe and effective for children of all ages including infants and young children. The standard dose is 10–15 mg/kg every 4–6 hours as needed for fever.",
+    "gold_label": "hallucination",
+    "ground_truth": "Aspirin is contraindicated in children under 16 years of age due to the risk of Reye's syndrome — a rare but potentially fatal condition causing hepatic and neurological damage. Paracetamol or ibuprofen are the appropriate antipyretics for children.",
+    "external_source": "BNF — Aspirin: 'NOT for use in children under 16 years — risk of Reye's syndrome'; otc_dosing.md: 'NOT for use in children <16 years'; NICE: do not use aspirin in febrile children under 16",
+    "notes": "RECALL GUARD — pre-authored false response. The aspirin+Reye's syndrome contraindication IS in the reference docs (otc_dosing.md), so maker will flag it. Checker (knowing this is medically false) will also flag. Consensus = flagged."
+  }
+]
