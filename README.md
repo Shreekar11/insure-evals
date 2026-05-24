@@ -140,7 +140,7 @@ flowchart TD
 - 5 authored medical reference docs (paracetamol dosing, drug interactions, allergy guidance, OTC dosing, symptom triage)
 - 17 probes answerable only from those docs; agent answers with docs in context
 - GPT-4o-mini judge checks each claim against references (refs = ground truth, not LLM opinion)
-- Multi-turn drift probes (turns 1, 5, 10) feed the **Context-Rot Curve**
+- Multi-turn drift probes (re-asked at turns 5, 10, 20 with no RAG) feed the **Context-Rot Curve**
 - Flagged = ≥1 unsupported claim; Severity 1–5
 
 ### Bias (gold-label benchmark)
@@ -176,7 +176,7 @@ flowchart TD
 
 ## Committed Differentiators
 
-- **Context-Rot Curve** — hallucination rate vs conversation length (turns 1/5/10); CTO-flagged signal
+- **Context-Rot Curve** — memory-only recall failure rate at turns 5/10/20 (no RAG on re-ask); OSS 90% vs Frontier 30% flat — 60pp persistent gap; CTO-flagged signal
 - **Premium Calculator** — illustrative formula: `base × hal_mult × bias_mult × safety_mult × volume × domain`
 - **Underwriter's Worksheet PDF** — one-page insurance form with all scores, illustrative premium, coverage limits, exclusions
 

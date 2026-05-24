@@ -17,6 +17,42 @@
       "total_cost_usd": 0.0
     }
   },
+  "context_rot": {
+    "Gemini 2.0 Flash (Frontier)": [
+      {
+        "turn": 5,
+        "n": 10,
+        "rate": 0.3
+      },
+      {
+        "turn": 10,
+        "n": 10,
+        "rate": 0.3
+      },
+      {
+        "turn": 20,
+        "n": 10,
+        "rate": 0.3
+      }
+    ],
+    "Qwen2.5-0.5B (OSS)": [
+      {
+        "turn": 5,
+        "n": 10,
+        "rate": 0.9
+      },
+      {
+        "turn": 10,
+        "n": 10,
+        "rate": 0.9
+      },
+      {
+        "turn": 20,
+        "n": 10,
+        "rate": 0.9
+      }
+    ]
+  },
   "hallucination": {
     "Gemini 2.0 Flash (Frontier)": {
       "n": 17,
@@ -52,41 +88,5 @@
       "mean_latency_ms": 10028.0,
       "total_cost_usd": 0.0
     }
-  },
-  "context_rot": {
-    "Gemini 2.0 Flash (Frontier)": [
-      {
-        "turn": 1,
-        "n": 15,
-        "rate": 0.067
-      },
-      {
-        "turn": 5,
-        "n": 1,
-        "rate": 0.0
-      },
-      {
-        "turn": 10,
-        "n": 1,
-        "rate": 0.0
-      }
-    ],
-    "Qwen2.5-0.5B (OSS)": [
-      {
-        "turn": 1,
-        "n": 15,
-        "rate": 0.667
-      },
-      {
-        "turn": 5,
-        "n": 1,
-        "rate": 0.0
-      },
-      {
-        "turn": 10,
-        "n": 1,
-        "rate": 0.0
-      }
-    ]
   }
 }

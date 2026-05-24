@@ -83,33 +83,78 @@ def rate_degree_chart(summary: dict) -> plt.Figure:
 
 def context_rot_chart(summary: dict) -> plt.Figure | None:
     """
-    Context-rot curve: hallucination rate vs conversation turn, per model.
+    Context-rot curve: memory-only recall failure rate vs conversation turn, per model.
+    Uses categorical x-axis (equal spacing) so turn 20 doesn't dwarf turns 5/10.
+    Marks the buffer-eviction boundary and annotates the OSS/Frontier gap.
     """
     rot = summary.get("context_rot", {})
     if not rot:
         return None
 
-    fig, ax = plt.subplots(figsize=(7, 4))
-    ax.set_title("Context-Rot Curve: Hallucination Rate vs Conversation Length",
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    ax.set_title("Memory-Only Recall Failure Rate vs Conversation Turn",
                  fontsize=11, fontweight="bold")
 
+    all_turns: list[int] = []
+    plot_data: list[tuple] = []
     for model, points in rot.items():
-        turns = [p["turn"] for p in sorted(points, key=lambda p: p["turn"])]
-        rates = [p["rate"] * 100 for p in sorted(points, key=lambda p: p["turn"])]
+        pts = sorted(points, key=lambda p: p["turn"])
+        turns = [p["turn"] for p in pts]
+        rates = [p["rate"] * 100 for p in pts]
+        ns = [p["n"] for p in pts]
         color = OSS_COLOR if ("qwen" in model.lower() or "oss" in model.lower()) else FRONTIER_COLOR
         label = _model_short(model)
-        ax.plot(turns, rates, "o-", color=color, label=label, linewidth=2, markersize=6)
+        plot_data.append((turns, rates, ns, color, label))
+        all_turns = turns  # same for all models
 
-    ax.set_xlabel("Conversation Turn")
-    ax.set_ylabel("Hallucination Rate (%)")
-    ax.set_ylim(0, 110)
+    # Categorical positions for equal spacing
+    positions = list(range(len(all_turns)))
+    tick_labels = [f"Turn {t}\n(N={plot_data[0][2][i]})" for i, t in enumerate(all_turns)]
+
+    for turns, rates, ns, color, label in plot_data:
+        ax.plot(positions, rates, "o-", color=color, label=label,
+                linewidth=2.5, markersize=8, zorder=3)
+        for i, (pos, rate) in enumerate(zip(positions, rates)):
+            ax.annotate(f"{rate:.0f}%", xy=(pos, rate),
+                        xytext=(0, 10), textcoords="offset points",
+                        ha="center", fontsize=9, color=color, fontweight="bold")
+
+    # Reference: buffer eviction occurs after turn 10 — shown as a subtle marker only.
+    # The data is FLAT (no rising slope), so this is purely informational, not causal.
+    if len(positions) >= 3:
+        evict_x = (positions[1] + positions[2]) / 2
+        ax.axvline(evict_x, color="gray", linestyle=":", linewidth=1, alpha=0.35, zorder=1)
+
+    # Gap annotation between the two models at the last turn
+    if len(plot_data) == 2:
+        rates_a = plot_data[0][1]
+        rates_b = plot_data[1][1]
+        gap = abs(rates_a[-1] - rates_b[-1])
+        if gap > 5:
+            top = max(rates_a[-1], rates_b[-1])
+            bot = min(rates_a[-1], rates_b[-1])
+            mid = (top + bot) / 2
+            ax.annotate("", xy=(positions[-1] + 0.18, top),
+                        xytext=(positions[-1] + 0.18, bot),
+                        arrowprops=dict(arrowstyle="<->", color="#aaa", lw=1.2))
+            ax.text(positions[-1] + 0.24, mid, f"{gap:.0f}pp\ngap",
+                    fontsize=8, color="#aaa", va="center")
+
+    ax.set_xticks(positions)
+    ax.set_xticklabels(tick_labels)
+    ax.set_ylabel("Recall Failure Rate (%)")
+    ax.set_ylim(0, 120)
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.0f}%"))
-    ax.legend(fontsize=9)
-    ax.grid(alpha=0.3)
+    ax.set_xlim(-0.4, len(positions) - 0.4)
+    ax.legend(fontsize=9, loc="lower right")
+    ax.grid(axis="y", alpha=0.25)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    note = "Note: N is small per turn — directional, not statistically significant."
-    ax.annotate(note, xy=(0.5, -0.18), xycoords="axes fraction", ha="center", fontsize=8, color="gray")
+    note = ("Memory-only re-ask (no RAG). N=10 sessions/turn. Curve is flat — "
+            "OSS recall is already broken at turn 5 (before buffer eviction). "
+            "Directional, not statistically significant.")
+    ax.annotate(note, xy=(0.5, -0.22), xycoords="axes fraction",
+                ha="center", fontsize=8, color="gray")
     plt.tight_layout()
     return fig
 

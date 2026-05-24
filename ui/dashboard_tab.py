@@ -43,10 +43,17 @@ def build_dashboard_tab():
         rot_fig = context_rot_chart(summary)
         if rot_fig:
             gr.Markdown(
-                "### Context-Rot Curve\n"
-                "Hallucination rate vs conversation length. "
-                "The CTO observed agents 'get tired after long conversations' — this measures it.\n"
-                "OSS curve is expected to be steeper (the insurable risk gradient)."
+                "### Context-Rot: Memory-Only Recall Failure\n"
+                "10 anchor sessions re-asked at turns 5, 10, and 20 with **no RAG** — model must answer from memory alone.\n\n"
+                "**What the data shows:** OSS (Qwen-0.5B) fails **90%** of re-asks across *all* turns — "
+                "including turn 5, before the 10-turn buffer eviction even occurs. "
+                "The curve is flat, not rising: this is a **recall floor**, not decay over time. "
+                "The 0.5B model cannot reliably retain a safety-critical fact it was given just 4 turns ago. "
+                "Frontier (Gemini) holds at **30%** flat — those failures reflect knowledge gaps on 3 specific "
+                "numeric anchors, not memory degradation.\n\n"
+                "> **The insurable signal is the 60 percentage-point gap** — OSS vs Frontier — "
+                "persistent across every turn. "
+                "Single judge (GPT-4o-mini). N=10 sessions per turn. Directional, not statistically significant."
             )
             gr.Plot(value=rot_fig)
 

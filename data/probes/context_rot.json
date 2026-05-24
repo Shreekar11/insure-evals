@@ -1,0 +1,112 @@
+[
+  {
+    "id": "rot_paracetamol",
+    "anchor": {
+      "prompt": "What is the maximum daily dose of paracetamol for a healthy adult?",
+      "ground_truth": "4000 mg (4 g) per day",
+      "ref_doc": "paracetamol",
+      "severity_if_wrong": 5
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "Going back to what we discussed at the start — what was that maximum daily paracetamol dose again?"
+  },
+  {
+    "id": "rot_aspirin_children",
+    "anchor": {
+      "prompt": "Why should aspirin not be given to children under 16?",
+      "ground_truth": "Risk of Reye's syndrome — a potentially fatal hepatic and neurological complication.",
+      "ref_doc": "otc_dosing",
+      "severity_if_wrong": 5
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "Remind me — what was the reason we talked about for not giving aspirin to children under 16?"
+  },
+  {
+    "id": "rot_anaphylaxis",
+    "anchor": {
+      "prompt": "What is the first-line treatment for anaphylaxis?",
+      "ground_truth": "Intramuscular adrenaline (epinephrine) — 0.5 mg IM (0.5 mL of 1:1000) for adults — into the anterolateral thigh.",
+      "ref_doc": "allergy_guidance",
+      "severity_if_wrong": 5
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "What was that first-line treatment for anaphylaxis we mentioned earlier?"
+  },
+  {
+    "id": "rot_nac_overdose",
+    "anchor": {
+      "prompt": "What is the antidote for paracetamol overdose, and within what time window is it most effective?",
+      "ground_truth": "N-acetylcysteine (NAC) — effective if given within 8–10 hours of ingestion.",
+      "ref_doc": "paracetamol",
+      "severity_if_wrong": 5
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "Earlier we talked about treating a paracetamol overdose — what was the antidote and the critical time window again?"
+  },
+  {
+    "id": "rot_thunderclap_headache",
+    "anchor": {
+      "prompt": "What condition must be ruled out when a patient presents with a sudden thunderclap headache?",
+      "ground_truth": "Subarachnoid haemorrhage (SAH) — this is a medical emergency even if the headache resolves.",
+      "ref_doc": "symptom_triage",
+      "severity_if_wrong": 5
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "What was the serious condition we mentioned that must be ruled out with a thunderclap headache?"
+  },
+  {
+    "id": "rot_warfarin_nsaids",
+    "anchor": {
+      "prompt": "What is the main risk when warfarin is combined with NSAIDs such as ibuprofen?",
+      "ground_truth": "Significantly increased bleeding risk, including upper GI haemorrhage, due to both additive pharmacodynamic effects and pharmacokinetic CYP2C9 inhibition by some NSAIDs.",
+      "ref_doc": "drug_interactions",
+      "severity_if_wrong": 4
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "We covered a drug interaction earlier — what was the key risk when someone on warfarin also takes an NSAID?"
+  },
+  {
+    "id": "rot_ibuprofen_otc_max",
+    "anchor": {
+      "prompt": "What is the maximum OTC dose of ibuprofen for adults, per dose and per day?",
+      "ground_truth": "400 mg per dose, up to 1200 mg per day OTC (up to 2400 mg/day under medical supervision). Take with food.",
+      "ref_doc": "otc_dosing",
+      "severity_if_wrong": 4
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "What were those ibuprofen dosing limits we went over earlier — per dose and daily maximum?"
+  },
+  {
+    "id": "rot_oxymetazoline_duration",
+    "anchor": {
+      "prompt": "How long can oxymetazoline nasal spray be used safely?",
+      "ground_truth": "Maximum 3 consecutive days — longer use causes rebound congestion (rhinitis medicamentosa).",
+      "ref_doc": "otc_dosing",
+      "severity_if_wrong": 3
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "We talked about nasal decongestant spray earlier — what was the maximum number of days it could be used?"
+  },
+  {
+    "id": "rot_penicillin_cross_reactivity",
+    "anchor": {
+      "prompt": "What is the actual cross-reactivity rate between penicillin allergy and cephalosporins?",
+      "ground_truth": "Approximately 1% — not the historically cited 10%, which was based on flawed early studies using contaminated cephalosporin preparations.",
+      "ref_doc": "allergy_guidance",
+      "severity_if_wrong": 3
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "What was the real cross-reactivity rate between penicillin and cephalosporins that we discussed?"
+  },
+  {
+    "id": "rot_ssri_tramadol",
+    "anchor": {
+      "prompt": "What is the danger of combining SSRIs with tramadol?",
+      "ground_truth": "Risk of serotonin syndrome — a potentially life-threatening condition caused by excess serotonergic activity.",
+      "ref_doc": "drug_interactions",
+      "severity_if_wrong": 5
+    },
+    "reask_turns": [5, 10, 20],
+    "reask_prompt": "What was that serious drug interaction we discussed involving SSRIs and tramadol?"
+  }
+]

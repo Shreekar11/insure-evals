@@ -146,7 +146,7 @@ def summary(db_path: Path = TRACES_DB) -> dict:
                    COUNT(*) AS n,
                    ROUND(AVG(CAST(flagged AS REAL)), 3) AS rate
             FROM traces
-            WHERE axis='hallucination'
+            WHERE axis='context_rot'
             GROUP BY model, turn
             ORDER BY model, turn
             """,
