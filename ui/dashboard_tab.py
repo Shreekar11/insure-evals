@@ -44,9 +44,16 @@ def build_dashboard_tab():
         if rot_fig:
             gr.Markdown(
                 "### Context-Rot Curve\n"
-                "Hallucination rate vs conversation length. "
-                "The CTO observed agents 'get tired after long conversations' — this measures it.\n"
-                "OSS curve is expected to be steeper (the insurable risk gradient)."
+                "Hallucination rate vs conversation turn — measuring real memory degradation across 10 anchor sessions.\n\n"
+                "**Methodology:** Each session establishes an anchor fact at turn 1 (with RAG). "
+                "Distractor turns fill the conversation buffer. At turns 5, 10, and 20 the anchor is re-asked "
+                "**with no RAG injection** — the model must answer from memory alone. "
+                "After turn 10, the anchor is evicted from the rolling 10-turn buffer (memory rot). "
+                "A re-ask at turn 20 forces pure recall from an empty buffer slot → the 0.5B model hallucinates; "
+                "Gemini's stronger retention holds.\n\n"
+                "> Single judge (GPT-4o-mini). N=10 sessions per turn bucket. "
+                "Directional signal, not statistically significant. "
+                "OSS > Frontier at turn 20 is the insurable risk gradient."
             )
             gr.Plot(value=rot_fig)
 
