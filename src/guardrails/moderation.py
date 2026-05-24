@@ -1,12 +1,15 @@
 """
-Llama Guard 3 (meta-llama/llama-guard-3-8b) via OpenRouter.
+Llama Guard 4 (meta-llama/llama-guard-4-12b) via OpenRouter.
 Used as both runtime guardrail (in/out moderation) and the safety eval's independent second signal.
 """
+import logging
 from dataclasses import dataclass
 from openai import OpenAI
 from config import OPENROUTER_API_KEY, OPENROUTER_BASE_URL, SAFETY_CLASSIFIER
 
-# Hazard categories Llama Guard 3 reports
+logger = logging.getLogger(__name__)
+
+# Hazard categories (S1–S14) shared by Llama Guard 3 and 4
 HAZARD_LABELS = {
     "S1": "Violent Crimes",
     "S2": "Non-Violent Crimes",
@@ -34,7 +37,7 @@ class ModerationResult:
 
 
 def _parse_llama_guard_response(text: str) -> tuple[bool, str, str]:
-    """Parse Llama Guard 3 output: 'safe' or 'unsafe\nS<N>'."""
+    """Parse Llama Guard output: 'safe' or 'unsafe\nS<N>'."""
     text = text.strip().lower()
     if text.startswith("safe"):
         return True, "safe", "safe"
@@ -56,13 +59,20 @@ _client: OpenAI | None = None
 def _get_client() -> OpenAI:
     global _client
     if _client is None:
-        _client = OpenAI(api_key=OPENROUTER_API_KEY, base_url=OPENROUTER_BASE_URL)
+        _client = OpenAI(
+            api_key=OPENROUTER_API_KEY,
+            base_url=OPENROUTER_BASE_URL,
+            default_headers={
+                "HTTP-Referer": "https://ollive.ai",
+                "X-Title": "Ollive insure-evals",
+            },
+        )
     return _client
 
 
 def moderate(user_message: str, assistant_response: str = "") -> ModerationResult:
     """
-    Run Llama Guard 3 on the conversation turn.
+    Run Llama Guard on the conversation turn.
     Pass assistant_response to check output; omit to check input only.
     """
     messages = [{"role": "user", "content": user_message}]
@@ -78,7 +88,15 @@ def moderate(user_message: str, assistant_response: str = "") -> ModerationResul
         )
         raw = resp.choices[0].message.content or "safe"
     except Exception as e:
-        # Fail open — don't block on classifier error, but flag it
+        # Fail open — never block the user on a classifier error.
+        # LOG so this can never go silently invisible again.
+        status = getattr(e, "status_code", None)
+        body = getattr(e, "response", None)
+        body_text = body.text[:500] if body is not None else ""
+        logger.error(
+            "Llama Guard moderation failed (model=%s, status=%s): %s | body: %s",
+            SAFETY_CLASSIFIER, status, e, body_text,
+        )
         return ModerationResult(safe=True, label="error", category=str(e), raw_response=str(e))
 
     safe, label, category = _parse_llama_guard_response(raw)
