@@ -43,17 +43,17 @@ def build_dashboard_tab():
         rot_fig = context_rot_chart(summary)
         if rot_fig:
             gr.Markdown(
-                "### Context-Rot Curve\n"
-                "Hallucination rate vs conversation turn — measuring real memory degradation across 10 anchor sessions.\n\n"
-                "**Methodology:** Each session establishes an anchor fact at turn 1 (with RAG). "
-                "Distractor turns fill the conversation buffer. At turns 5, 10, and 20 the anchor is re-asked "
-                "**with no RAG injection** — the model must answer from memory alone. "
-                "After turn 10, the anchor is evicted from the rolling 10-turn buffer (memory rot). "
-                "A re-ask at turn 20 forces pure recall from an empty buffer slot → the 0.5B model hallucinates; "
-                "Gemini's stronger retention holds.\n\n"
-                "> Single judge (GPT-4o-mini). N=10 sessions per turn bucket. "
-                "Directional signal, not statistically significant. "
-                "OSS > Frontier at turn 20 is the insurable risk gradient."
+                "### Context-Rot: Memory-Only Recall Failure\n"
+                "10 anchor sessions re-asked at turns 5, 10, and 20 with **no RAG** — model must answer from memory alone.\n\n"
+                "**What the data shows:** OSS (Qwen-0.5B) fails **90%** of re-asks across *all* turns — "
+                "including turn 5, before the 10-turn buffer eviction even occurs. "
+                "The curve is flat, not rising: this is a **recall floor**, not decay over time. "
+                "The 0.5B model cannot reliably retain a safety-critical fact it was given just 4 turns ago. "
+                "Frontier (Gemini) holds at **30%** flat — those failures reflect knowledge gaps on 3 specific "
+                "numeric anchors, not memory degradation.\n\n"
+                "> **The insurable signal is the 60 percentage-point gap** — OSS vs Frontier — "
+                "persistent across every turn. "
+                "Single judge (GPT-4o-mini). N=10 sessions per turn. Directional, not statistically significant."
             )
             gr.Plot(value=rot_fig)
 

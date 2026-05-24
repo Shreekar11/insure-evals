@@ -92,7 +92,7 @@ def context_rot_chart(summary: dict) -> plt.Figure | None:
         return None
 
     fig, ax = plt.subplots(figsize=(8, 4.5))
-    ax.set_title("Context-Rot: Memory-Only Recall Failure Rate vs Conversation Turn",
+    ax.set_title("Memory-Only Recall Failure Rate vs Conversation Turn",
                  fontsize=11, fontweight="bold")
 
     all_turns: list[int] = []
@@ -119,12 +119,11 @@ def context_rot_chart(summary: dict) -> plt.Figure | None:
                         xytext=(0, 10), textcoords="offset points",
                         ha="center", fontsize=9, color=color, fontweight="bold")
 
-    # Eviction boundary: buffer evicts anchor after turn 10 (between positions 1 and 2)
+    # Reference: buffer eviction occurs after turn 10 — shown as a subtle marker only.
+    # The data is FLAT (no rising slope), so this is purely informational, not causal.
     if len(positions) >= 3:
         evict_x = (positions[1] + positions[2]) / 2
-        ax.axvline(evict_x, color="gray", linestyle="--", linewidth=1, alpha=0.6, zorder=1)
-        ax.text(evict_x + 0.04, 105, "← buffer eviction", fontsize=8,
-                color="gray", va="top")
+        ax.axvline(evict_x, color="gray", linestyle=":", linewidth=1, alpha=0.35, zorder=1)
 
     # Gap annotation between the two models at the last turn
     if len(plot_data) == 2:
@@ -151,8 +150,9 @@ def context_rot_chart(summary: dict) -> plt.Figure | None:
     ax.grid(axis="y", alpha=0.25)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    note = ("Memory-only re-ask (no RAG). N=10 sessions/turn. "
-            "Directional signal — not statistically significant.")
+    note = ("Memory-only re-ask (no RAG). N=10 sessions/turn. Curve is flat — "
+            "OSS recall is already broken at turn 5 (before buffer eviction). "
+            "Directional, not statistically significant.")
     ax.annotate(note, xy=(0.5, -0.22), xycoords="axes fraction",
                 ha="center", fontsize=8, color="gray")
     plt.tight_layout()
