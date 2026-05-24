@@ -76,7 +76,10 @@ def chat_fn(message: str, history: list, model_choice: str, session_id: str) -> 
     input_mod = moderate(message)
     if not input_mod.safe:
         blocked = f"[Input blocked: {input_mod.category}. Please ask a different question.]"
-        history = history + [(message, blocked)]
+        history = history + [
+            {"role": "user", "content": message},
+            {"role": "assistant", "content": blocked},
+        ]
         return "", history
 
     agent, agent_key = _get_agent(model_choice)
@@ -107,7 +110,10 @@ def chat_fn(message: str, history: list, model_choice: str, session_id: str) -> 
     except Exception as e:
         response = f"[Error: {e}]"
         memory.add("assistant", response)
-        history = history + [(message, response)]
+        history = history + [
+            {"role": "user", "content": message},
+            {"role": "assistant", "content": response},
+        ]
         return "", history
 
     # Output moderation
@@ -116,7 +122,10 @@ def chat_fn(message: str, history: list, model_choice: str, session_id: str) -> 
         response = BLOCKED_REPLY
 
     memory.add("assistant", response)
-    history = history + [(message, response)]
+    history = history + [
+        {"role": "user", "content": message},
+        {"role": "assistant", "content": response},
+    ]
     return "", history
 
 
