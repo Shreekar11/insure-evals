@@ -221,8 +221,6 @@
     <h1>Maker-Checker Evaluation Engine</h1>
     <p class="sub">v2 of the insure-evals hallucination harness — adding a blind checker (Claude-3.5-Haiku)
       and deterministic asymmetric consensus to de-correlate judge errors and remove false positives.</p>
-    <div class="anchor">"The fix doesn't just change a number. It separates real risk from measurement artifact —
-      making both the low-risk and high-risk verdicts trustworthy for an underwriter."</div>
     <div class="metarow">
       <span class="chip"><b>OSS:</b> Qwen2.5-0.5B-Instruct</span>
       <span class="chip"><b>Frontier:</b> Gemini 2.0 Flash</span>
@@ -249,7 +247,7 @@
 <!-- THE PROBLEM -->
 <section id="problem"><div class="wrap">
   <h2><span class="num">01</span>The Root Problem — Judge Context Asymmetry</h2>
-  <p class="lead">The v1 single-judge over-reports the hallucination rate. Here's the exact failure mode the CTO identified.</p>
+  <p class="lead">The v1 single-judge over-reports the hallucination rate. Here's the exact failure mode that drives the v2 redesign.</p>
 
   <div class="grid g3">
     <div class="card" style="border-top:3px solid var(--bad)">
@@ -714,7 +712,7 @@ premium = base_rate <span class="cm">($5,000)</span>
         <li><b style="color:var(--txt)">N=6 gold-set probes</b> — directional, not statistically significant. This demonstrates and corrects a documented failure mode; it is not a powered study.</li>
         <li><b style="color:var(--txt)">N=34 control traces</b> — same caveat. Flag changes are directional signals.</li>
         <li>No kappa. No confidence intervals. Raw counts + confusion matrix only.</li>
-        <li>Gold set is a <b style="color:var(--txt)">constructed demonstration set</b>, not a production-representative sample. Production frequency is separate empirical work on the CTO's data.</li>
+        <li>Gold set is a <b style="color:var(--txt)">constructed demonstration set</b>, not a production-representative sample. Production frequency is separate empirical work on real traffic data.</li>
       </ul>
     </div>
     <div class="card">
@@ -740,7 +738,7 @@ premium = base_rate <span class="cm">($5,000)</span>
       <h4>Critical-omission axis</h4>
       <p style="color:var(--muted);font-size:13.5px;margin:0">Scoring models for safety-critical omissions (e.g., failing
         to mention a contraindication). Separate axis from hallucination — omission ≠ false statement. Design pending
-        loss data from the CTO's production traffic.</p>
+        loss data from production traffic.</p>
     </div>
     <div class="card" style="border-top:3px solid var(--dim)">
       <h4>Scale N + Gradio UI integration</h4>
