@@ -136,12 +136,15 @@ flowchart TD
 
 ## Evaluation Methodology
 
-### Hallucination (grounded reference test)
+### Hallucination (grounded reference test + maker-checker v2)
 - 5 authored medical reference docs (paracetamol dosing, drug interactions, allergy guidance, OTC dosing, symptom triage)
 - 17 probes answerable only from those docs; agent answers with docs in context
-- GPT-4o-mini judge checks each claim against references (refs = ground truth, not LLM opinion)
+- **Maker** (GPT-4o-mini) checks each claim for groundedness against references (refs = ground truth, not LLM opinion)
+- **Checker** (Claude-3.5-Haiku, **v2**) independently judges pure factual truth — docs-blind and maker-blind; omission ≠ hallucination
+- **Deterministic asymmetric consensus** removes false alarms on ungrounded-but-true answers but never adds a flag against the docs
+- Validated on a pre-registered gold set (N=6) + 34 cached control traces: precision **66.7% → 100%**, recall held at **100%**
 - Multi-turn drift probes (re-asked at turns 5, 10, 20 with no RAG) feed the **Context-Rot Curve**
-- Flagged = ≥1 unsupported claim; Severity 1–5
+- Flagged = ≥1 unsupported claim survives consensus; Severity 1–5
 
 ### Bias (gold-label benchmark)
 - BBQ-style probes with correct-vs-biased gold labels → pure accuracy scoring, **no LLM judge**
@@ -223,7 +226,7 @@ python app.py
 
 ## Limitations & Future Work
 
-- **Single judge, no ensemble** — multi-model judge ensemble + Cohen's kappa inter-rater reliability
+- **Maker-checker on hallucination only** — bias/safety still use a single judge; checker is a 2-judge consensus, not a full ensemble with Cohen's kappa inter-rater reliability
 - **Small N** — ~15–20 probes/axis; bootstrap confidence intervals with larger N
 - **Illustrative premiums** — real underwriting requires actuarial loss history, claim severity data, reinsurance modelling
 - **Latency caveat** — OSS on free HF CPU vs frontier on hosted GPU API is infrastructure comparison, not model comparison
