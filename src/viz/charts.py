@@ -159,6 +159,114 @@ def context_rot_chart(summary: dict) -> plt.Figure | None:
     return fig
 
 
+BASELINE_COLOR = "#e05c5c"   # single judge (red)
+MC_COLOR = "#3aab6b"         # maker-checker (green)
+
+
+def _confusion(rows: list[dict], flag_key: str) -> dict:
+    """2x2 confusion matrix. Positive class = gold_label == 'hallucination'."""
+    tp = fp = tn = fn = 0
+    for r in rows:
+        gold_pos = r.get("gold_label") == "hallucination"
+        pred_pos = bool(r.get(flag_key))
+        if gold_pos and pred_pos:
+            tp += 1
+        elif not gold_pos and pred_pos:
+            fp += 1
+        elif gold_pos and not pred_pos:
+            fn += 1
+        else:
+            tn += 1
+    precision = tp / (tp + fp) if (tp + fp) else 0.0
+    recall = tp / (tp + fn) if (tp + fn) else 0.0
+    return dict(tp=tp, fp=fp, tn=tn, fn=fn, precision=precision, recall=recall)
+
+
+def maker_checker_stats(gold: list[dict], control: list[dict]) -> dict:
+    """Compute headline numbers for the maker-checker dashboard section."""
+    base = _confusion(gold, "maker_flagged")
+    mc = _confusion(gold, "consensus_flagged")
+    changed = [r for r in control if r.get("baseline_flagged") != r.get("consensus_flagged")]
+    removed = [r for r in changed if r.get("baseline_flagged") and not r.get("consensus_flagged")]
+    added = [r for r in changed if not r.get("baseline_flagged") and r.get("consensus_flagged")]
+    return {
+        "baseline": base,
+        "maker_checker": mc,
+        "control_total": len(control),
+        "control_removed": len(removed),
+        "control_added": len(added),
+        "control_unchanged": len(control) - len(changed),
+    }
+
+
+def maker_checker_chart(gold: list[dict], control: list[dict]) -> plt.Figure:
+    """
+    Two-panel maker-checker comparison:
+      Left  — gold-set Precision & Recall (single judge vs maker-checker).
+      Right — control-set flag count (baseline vs consensus) with removed/added breakdown.
+    """
+    s = maker_checker_stats(gold, control)
+    base, mc = s["baseline"], s["maker_checker"]
+
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig.suptitle("Maker-Checker vs Single Judge (Hallucination)", fontsize=13, fontweight="bold", y=1.02)
+
+    # ── Left: precision & recall ─────────────────────────────────────────────
+    ax = axes[0]
+    metrics = ["Precision", "Recall"]
+    x = np.arange(len(metrics))
+    bar_w = 0.35
+    base_vals = [base["precision"] * 100, base["recall"] * 100]
+    mc_vals = [mc["precision"] * 100, mc["recall"] * 100]
+
+    b1 = ax.bar(x - bar_w / 2, base_vals, bar_w, label="Single Judge (v1)", color=BASELINE_COLOR, alpha=0.85)
+    b2 = ax.bar(x + bar_w / 2, mc_vals, bar_w, label="Maker-Checker (v2)", color=MC_COLOR, alpha=0.9)
+    ax.set_xticks(x)
+    ax.set_xticklabels(metrics)
+    ax.set_ylabel("Score (%)")
+    ax.set_ylim(0, 115)
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.0f}%"))
+    ax.set_title(f"Gold set (N={base['tp']+base['fp']+base['tn']+base['fn']}, pre-registered)", fontsize=10)
+    ax.legend(fontsize=8, loc="lower right")
+    ax.grid(axis="y", alpha=0.3)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    for bars in (b1, b2):
+        for bar in bars:
+            h = bar.get_height()
+            ax.annotate(f"{h:.0f}%", xy=(bar.get_x() + bar.get_width() / 2, h),
+                        xytext=(0, 3), textcoords="offset points", ha="center", va="bottom", fontsize=8)
+
+    # ── Right: control flag count ─────────────────────────────────────────────
+    ax2 = axes[1]
+    baseline_flags = sum(1 for r in control if r.get("baseline_flagged"))
+    consensus_flags = sum(1 for r in control if r.get("consensus_flagged"))
+    labels = ["Single Judge\n(v1 baseline)", "Maker-Checker\n(v2 consensus)"]
+    vals = [baseline_flags, consensus_flags]
+    colors = [BASELINE_COLOR, MC_COLOR]
+    bars = ax2.bar(labels, vals, color=colors, alpha=0.88, width=0.5)
+    ax2.set_ylabel("Hallucination flags raised")
+    ax2.set_title(f"Control set (N={s['control_total']} cached traces)", fontsize=10)
+    ax2.set_ylim(0, max(vals) * 1.25 + 1)
+    ax2.grid(axis="y", alpha=0.3)
+    ax2.spines["top"].set_visible(False)
+    ax2.spines["right"].set_visible(False)
+    for bar, v in zip(bars, vals):
+        ax2.annotate(f"{v}", xy=(bar.get_x() + bar.get_width() / 2, v),
+                     xytext=(0, 3), textcoords="offset points", ha="center", va="bottom",
+                     fontsize=10, fontweight="bold")
+    ax2.annotate(f"−{s['control_removed']} false alarms removed by checker",
+                 xy=(0.5, 0.95), xycoords="axes fraction", ha="center",
+                 fontsize=9, color=MC_COLOR, fontweight="bold")
+    if s["control_added"]:
+        ax2.annotate(f"+{s['control_added']} maker re-judge variance (temp=0 non-determinism)",
+                     xy=(0.5, 0.87), xycoords="axes fraction", ha="center",
+                     fontsize=8, color="#999")
+
+    plt.tight_layout()
+    return fig
+
+
 def latency_cost_table(summary: dict) -> list[list]:
     """Returns rows for a gr.Dataframe."""
     rows = []

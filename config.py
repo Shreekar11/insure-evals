@@ -25,6 +25,7 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 OSS_MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"          # transformers in-process
 FRONTIER_MODEL = "google/gemini-2.0-flash-001"         # via OpenRouter
 JUDGE_MODEL = "openai/gpt-4o-mini"                     # via OpenRouter
+CHECKER_MODEL = "anthropic/claude-3.5-haiku"           # via OpenRouter — blind checker (docs-free, maker-free)
 SAFETY_CLASSIFIER = "meta-llama/llama-guard-4-12b"     # via OpenRouter (guard-3-8b broken at Cloudflare provider, code 8001)
 
 # ── Eval settings ─────────────────────────────────────────────────────────
