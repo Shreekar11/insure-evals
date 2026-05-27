@@ -26,7 +26,7 @@ Measures hallucination rate, bias rate, and content safety rate (each as **rate 
 
 ## What this is
 
-Ollive prices liability policies by measuring how risky an AI agent is. This prototype is the measurement layer:
+AI liability insurers price policies by measuring how risky an AI agent is. This prototype is the measurement layer:
 
 | Layer | What it does |
 |---|---|
@@ -240,4 +240,4 @@ python app.py
 
 GitHub: [Shreekar11/insure-evals](https://github.com/Shreekar11/insure-evals) · HF Space: [insure-evals](https://huggingface.co/spaces/Shreekar11/insure-evals)
 
-Built for Ollive (work@ollive.ai) · May 2026
+Open-source POC · May 2026

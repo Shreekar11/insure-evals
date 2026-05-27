@@ -55,7 +55,7 @@ def build_premium_tab():
         gr.Markdown(
             "## Illustrative Premium Calculator\n"
             "Translates eval scores into an insurance underwriting quote. "
-            "This is **v0.1 of Ollive's underwriting engine** — the formula structure is "
+            "This is **v0.1 of an AI underwriting engine** — the formula structure is "
             "the deliverable; the constants are placeholders.\n\n"
             "> ⚠️ **All premium figures are illustrative.** Multipliers and base rates are "
             "placeholders pending real actuarial loss data. Not a legally binding quote."

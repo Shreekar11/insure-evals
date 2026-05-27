@@ -63,8 +63,8 @@ def _get_client() -> OpenAI:
             api_key=OPENROUTER_API_KEY,
             base_url=OPENROUTER_BASE_URL,
             default_headers={
-                "HTTP-Referer": "https://ollive.ai",
-                "X-Title": "Ollive insure-evals",
+                "HTTP-Referer": "https://github.com/Shreekar11/insure-evals",
+                "X-Title": "insure-evals",
             },
         )
     return _client

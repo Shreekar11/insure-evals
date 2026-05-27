@@ -1,6 +1,6 @@
 """
-insure-evals — AI Risk Evaluation Harness for Ollive
-"I didn't build an eval harness. I built v0.1 of Ollive's underwriting engine."
+insure-evals — AI Risk Evaluation Harness for AI Liability Insurance
+"I didn't build an eval harness. I built v0.1 of an AI underwriting engine."
 
 HF Spaces entrypoint. Assembles all tabs from ui/.
 Reads OPENROUTER_API_KEY and GEMINI_API_KEY from env / HF Space Secrets.
@@ -26,8 +26,7 @@ def build_app() -> gr.Blocks:
     with gr.Blocks(title="insure-evals — AI Risk Evaluation") as demo:
         gr.Markdown(
             "# 🔬 insure-evals\n"
-            "**AI Risk Evaluation Harness** | Built for [Ollive](https://ollive.ai) "
-            "— liability insurance for AI agents.\n\n"
+            "**AI Risk Evaluation Harness** | AI liability insurance for agents.\n\n"
             "Measures **hallucination rate**, **bias rate**, and **content safety rate** "
             "(each as rate % + mean severity 1–5) across an OSS model (Qwen2.5-0.5B) "
             "and a frontier model (Gemini 2.0 Flash). "
@@ -51,7 +50,7 @@ def build_app() -> gr.Blocks:
                 gr.Markdown(
                     "## About insure-evals\n\n"
                     "### What this is\n"
-                    "A prototype of Ollive's AI underwriting measurement layer. "
+                    "A prototype AI underwriting measurement layer. "
                     "Two chat assistants (OSS + frontier) in a medical domain are scored "
                     "on hallucination, bias, and content safety — the same axes an insurer "
                     "would use to price a liability policy for an AI agent.\n\n"

@@ -20,8 +20,8 @@ from src.underwriting.premium import calculate, PremiumResult
 from config import SUMMARY_JSON, RESULTS_DIR
 
 # ── Colors ────────────────────────────────────────────────────────────────
-OLLIVE_DARK = colors.HexColor("#1a2a3a")
-OLLIVE_ACCENT = colors.HexColor("#2563eb")
+BRAND_DARK = colors.HexColor("#1a2a3a")
+BRAND_ACCENT = colors.HexColor("#2563eb")
 RISK_COLORS = {
     "Low": colors.HexColor("#16a34a"),
     "Medium": colors.HexColor("#ca8a04"),
@@ -82,17 +82,17 @@ def generate_pdf(output_path: Path | None = None) -> bytes:
     )
 
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle("title", fontSize=15, textColor=OLLIVE_DARK,
+    title_style = ParagraphStyle("title", fontSize=15, textColor=BRAND_DARK,
                                  fontName="Helvetica-Bold", alignment=TA_CENTER, spaceAfter=2)
     subtitle_style = ParagraphStyle("sub", fontSize=8, textColor=MID_GREY,
                                     alignment=TA_CENTER, spaceAfter=4)
-    section_style = ParagraphStyle("section", fontSize=9, textColor=OLLIVE_ACCENT,
+    section_style = ParagraphStyle("section", fontSize=9, textColor=BRAND_ACCENT,
                                    fontName="Helvetica-Bold", spaceBefore=5, spaceAfter=2)
     body_style = ParagraphStyle("body", fontSize=8, leading=10)
     caveat_style = ParagraphStyle("caveat", fontSize=6.5, textColor=MID_GREY,
                                   leading=9, alignment=TA_CENTER, spaceBefore=3)
 
-    def tbl_style(header_color=OLLIVE_DARK):
+    def tbl_style(header_color=BRAND_DARK):
         return TableStyle([
             ("BACKGROUND", (0, 0), (-1, 0), header_color),
             ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
@@ -110,9 +110,9 @@ def generate_pdf(output_path: Path | None = None) -> bytes:
     # ── Header ─────────────────────────────────────────────────────────
     story.append(Paragraph("UNDERWRITER'S WORKSHEET", title_style))
     story.append(Paragraph(
-        f"AI Liability Risk Assessment · Ollive AI Insurance · {today}", subtitle_style
+        f"AI Liability Risk Assessment · insure-evals · {today}", subtitle_style
     ))
-    story.append(HRFlowable(width="100%", thickness=1.5, color=OLLIVE_ACCENT, spaceAfter=4))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=BRAND_ACCENT, spaceAfter=4))
 
     # ── Policy metadata ────────────────────────────────────────────────
     meta_data = [
@@ -212,7 +212,7 @@ def generate_pdf(output_path: Path | None = None) -> bytes:
     ]
     uw_tbl = Table(uw_data, colWidths=[45 * mm, 72 * mm, 63 * mm])
     uw_style = TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), OLLIVE_DARK),
+        ("BACKGROUND", (0, 0), (-1, 0), BRAND_DARK),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
         ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
         ("FONTSIZE", (0, 0), (-1, -1), 8),
@@ -247,7 +247,7 @@ def generate_pdf(output_path: Path | None = None) -> bytes:
     story.append(Paragraph(
         "⚠ ILLUSTRATIVE ONLY · Single judge (GPT-4o-mini, temperature=0) · ~20–30 probes/axis — directional, not statistically significant · "
         "Premium multipliers and base rates are placeholders pending real actuarial loss data · "
-        "Not a legally binding insurance quote · Ollive AI Insurance · insure-evals v0.1",
+        "Not a legally binding insurance quote · insure-evals v0.1",
         caveat_style,
     ))
 
