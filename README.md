@@ -21,6 +21,7 @@ short_description: Measures hallucination, bias & safety risk in LLMs.
 Measures hallucination rate, bias rate, and content safety rate (each as **rate %** + **mean severity 1–5**) across two chat assistants in a medical domain. Scores feed an illustrative insurance underwriting formula.
 
 **Live demo:** [HF Spaces](https://huggingface.co/spaces/Shreekar11/insure-evals)
+<br>
 **Evals report:** [Report](https://evals-maker-checker.vercel.app/)
 
 ---
